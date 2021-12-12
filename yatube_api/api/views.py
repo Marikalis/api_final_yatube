@@ -5,8 +5,9 @@ from rest_framework.pagination import LimitOffsetPagination
 
 from .mixins import CreateListViewSet
 from .permissions import IsAuthorOrReadOnlyPermission
-from posts.models import Follow, Group, Post
-from .serializers import CommentSerializer, FollowSerializer, GroupSerializer, PostSerializer
+from posts.models import Group, Post
+from .serializers import CommentSerializer, FollowSerializer, GroupSerializer
+from .serializers import PostSerializer
 
 CREATE_DENIED_MESSAGE = 'Необходима авторизация для создания поста'
 DELETE = 'Удаление чужого контента запрещено'
