@@ -1,11 +1,12 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import filters, mixins, viewsets, permissions
+from rest_framework import filters, viewsets, permissions
 from rest_framework.pagination import LimitOffsetPagination
 
 
-from .serializers import CommentSerializer, FollowSerializer, GroupSerializer, PostSerializer
+from .mixins import CreateListViewSet
 from .permissions import IsAuthorOrReadOnlyPermission
 from posts.models import Follow, Group, Post
+from .serializers import CommentSerializer, FollowSerializer, GroupSerializer, PostSerializer
 
 CREATE_DENIED_MESSAGE = 'Необходима авторизация для создания поста'
 DELETE = 'Удаление чужого контента запрещено'
@@ -27,10 +28,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly,
-        IsAuthorOrReadOnlyPermission
-    ]
+    permission_classes = (IsAuthorOrReadOnlyPermission,)
 
     def get_post(self):
         post_id = self.kwargs.get('post_id')
@@ -47,11 +45,6 @@ class CommentViewSet(viewsets.ModelViewSet):
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-
-
-class CreateListViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
-                        viewsets.GenericViewSet):
-    pass
 
 
 class FollowViewSet(CreateListViewSet):
