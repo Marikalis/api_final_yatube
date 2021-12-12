@@ -42,13 +42,15 @@ class FollowSerializer(serializers.ModelSerializer):
         queryset=User.objects.all()
     )
 
+    class Meta:
+        fields = '__all__'
+        model = Follow
+        validators = [serializers.UniqueTogetherValidator(
+            queryset=Follow.objects.all(), fields=('user', 'following'))]
+
     def validate_following(self, value):
         if self.context.get('request', None).user == value:
             raise serializers.ValidationError(
                 'User and Following must be different'
             )
         return value
-
-    class Meta:
-        fields = '__all__'
-        model = Follow
