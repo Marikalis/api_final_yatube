@@ -45,12 +45,17 @@ class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Follow
-        validators = [serializers.UniqueTogetherValidator(
-            queryset=Follow.objects.all(), fields=('user', 'following'))]
+        validators = [
+            serializers.UniqueTogetherValidator(
+                queryset=Follow.objects.all(),
+                fields=('user', 'following'),
+                message=(
+                    'Пользователь и подписавшийся должны быть уникальными')
+            )
+        ]
 
     def validate_following(self, value):
-        if self.context.get('request', None).user == value:
+        if self.context['request'].user == value:
             raise serializers.ValidationError(
-                'User and Following must be different'
-            )
+                'Пользователь и подписавшийся должны различаться')
         return value
