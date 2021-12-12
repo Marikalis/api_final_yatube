@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, mixins, viewsets, permissions
+from rest_framework.pagination import LimitOffsetPagination
 
 
 from .serializers import CommentSerializer, FollowSerializer, GroupSerializer, PostSerializer
@@ -18,6 +19,7 @@ class PostViewSet(viewsets.ModelViewSet):
         permissions.IsAuthenticatedOrReadOnly,
         IsAuthorOrReadOnlyPermission
     ]
+    pagination_class = LimitOffsetPagination
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
