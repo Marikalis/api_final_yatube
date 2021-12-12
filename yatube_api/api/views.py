@@ -1,6 +1,6 @@
-from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, mixins, viewsets, permissions
+
 
 from .serializers import CommentSerializer, FollowSerializer, GroupSerializer, PostSerializer
 from .permissions import IsAuthorOrReadOnlyPermission
@@ -19,22 +19,8 @@ class PostViewSet(viewsets.ModelViewSet):
         IsAuthorOrReadOnlyPermission
     ]
 
-
-
     def perform_create(self, serializer):
-    #    if not self.request.user.is_authenticated:
-    #        raise PermissionDenied(CREATE_DENIED_MESSAGE)
         serializer.save(author=self.request.user)
-
-#    def perform_update(self, serializer):
-#        if serializer.instance.author != self.request.user:
-#            raise PermissionDenied(UPDATE)
-#        super().perform_update(serializer)
-
-#   def perform_destroy(self, instance):
-#        if instance.author != self.request.user:
-#            raise PermissionDenied(DELETE)
-#        instance.delete()
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -52,17 +38,6 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user, post=self.get_post())
 
-#    def perform_update(self, serializer):
-#        if serializer.instance.author != self.request.user:
-#            raise PermissionDenied(UPDATE)
-#        super().perform_update(serializer)
-
-#    def perform_destroy(self, instance):
-#        if instance.author != self.request.user:
-#            raise PermissionDenied(
-#                DELETE)
-#        instance.delete()
-
     def get_queryset(self):
         return self.get_post().comments
 
@@ -77,7 +52,7 @@ class CreateListViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
     pass
 
 
-class FollowViewSet(viewsets.CreateListViewSet):
+class FollowViewSet(CreateListViewSet):
     serializer_class = FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = (filters.SearchFilter,)
@@ -88,4 +63,3 @@ class FollowViewSet(viewsets.CreateListViewSet):
 
     def get_queryset(self):
         return self.request.user.user.all()
-
