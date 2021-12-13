@@ -50,7 +50,7 @@ class FollowSerializer(serializers.ModelSerializer):
                 queryset=Follow.objects.all(),
                 fields=('user', 'following'),
                 message=(
-                    'Пользователь и подписавшийся должны быть уникальными')
+                    'Вы не можете подписаться сами на себя')
             )
         ]
 
